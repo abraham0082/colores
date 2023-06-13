@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Combinación de colores</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <style>
+        .color-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Combinación de colores</h1>
+
+    <h2>Estilo</h2>
+    <div class="form-group">
+        <label for="estilo">Selecciona un estilo:</label>
+        <select class="form-control" id="estilo" onchange="actualizarEstilo()">
+            <option value="casual">Casual</option>
+            <option value="formal">Formal</option>
+        </select>
+    </div>
+
+    <h2>Selector de Colores</h2>
+
+    <div class="color-selector">
+        <div class="color-preview" id="color-preview1"></div>
+        <input class="form-control" type="color" id="color-input1" onchange="actualizarColorPreview(1)">
+    </div>
+
+    <div class="color-selector">
+        <div class="color-preview" id="color-preview2"></div>
+        <input class="form-control" type="color" id="color-input2" onchange="actualizarColorPreview(2)">
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="calcularCalidad()">Calcular Calidad</button>
+    <div id="resultado"></div>
+    <div id="sugerencia"></div>
+
+    <script>
+        function actualizarEstilo() {
+            var estiloSelect = document.getElementById("estilo");
+            var estilo = estiloSelect.value;
+
+            
+            console.log("Estilo seleccionado: " + estilo);
+        }
+
+        function actualizarColorPreview(num) {
+            var colorInput = document.getElementById("color-input" + num);
+            var colorPreview = document.getElementById("color-preview" + num);
+
+            colorPreview.style.backgroundColor = colorInput.value;
+        }
+
+        function calcularCalidad() {
+            var color1 = document.getElementById("color-input1").value;
+            var color2 = document.getElementById("color-input2").value;
+            var estilo = document.getElementById("estilo").value;
+
+          
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Procesar la respuesta del servidor
+                    var calidad = this.responseText;
+                    // console.log(calidad); // Ejemplo de impresión de la respuesta
+
+                    //console.log("hola");
+                    console.log(calidad);
+
+                   
+
+                    mostrarResultado(calidad);
+                    mostrarSugerenciaContexto(color1, color2);
+                    
+                }
+            };
+            xhttp.open("POST", "{{ path('calcular_calidad') }}", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("color1=" + color1 + "&color2=" + color2 + "&estilo=" + estilo);
+        }
+
+        function mostrarResultado(calidad) {
+            var resultadoDiv = document.getElementById("resultado");
+            resultadoDiv.innerHTML = "La calidad de la combinación es: " + calidad;
+        }
+
+        function mostrarSugerenciaContexto(color1, color2) {
+            var sugerenciaDiv = document.getElementById("sugerencia");
+            sugerenciaDiv.innerHTML = "Sugerencia de contexto: ..."; 
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+index:
+    path: /colores
+    controller: App\Controller\ColoresController::index
+
+calcular_calidad:
+  path: /calcular-calidad
+  controller: App\Controller\ColoresController::calcularCalidad
+

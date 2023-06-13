@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Colores</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de calidad de colores</h1>
+
+        <form id="color-form" action="{{ path('calcular_calidad') }}" method="post">
+            <div class="form-group">
+                <label for="color1">Color 1</label>
+                <input type="color" id="color1" name="color1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="color2">Color 2</label>
+                <input type="color" id="color2" name="color2" required>
+            </div>
+
+            <div class="form-group">
+                <label for="estilo">Estilo</label>
+                <select id="estilo" name="estilo" required>
+                    <option value="formal">Formal</option>
+                    <option value="casual">Casual</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Calcular calidad</button>
+        </form>
+
+        <div id="resultado" class="mt-4"></div>
+        <div id="sugerencia-contexto" class="mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#color-form').submit(function(event) {
+                event.preventDefault();
+
+                var color1 = $('#color1').val();
+                var color2 = $('#color2').val();
+                var estilo = $('#estilo').val();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: {
+                        color1: color1,
+                        color2: color2,
+                        estilo: estilo
+                    },
+                    success: function(response) {
+                        mostrarResultado(response.calidad);
+                        mostrarSugerenciaContexto(color1, color2);
+                    },
+                    error: function() {
+                        $('#resultado').html('Error al calcular la calidad.');
+                    }
+                });
+            });
+
+            function mostrarResultado(calidad) {
+
+            var resultadoDiv = document.getElementById("resultado");
+
+                //console.log(calidad);
+            // calidad = Number(calidad);
+            // console.log("mostrarResultado");
+            // 
+            // console.log("mostrarResultadonuevo");
+                //console.log(calidad);
+                if (!isNaN(calidad)) {
+                    if (calidad >= 0.8) {
+                        resultadoDiv.innerHTML = "La combinación de colores es excelente!  "+ calidad;
+                    } else if (calidad >= 0.5) {
+                        resultadoDiv.innerHTML = "La combinación de colores es buena.  "+ calidad;
+                    } else if (calidad >= 0.3) {
+                        resultadoDiv.innerHTML = "La combinación de colores es aceptable.  "+ calidad;
+                    } else {
+                        resultadoDiv.innerHTML = "La combinación de colores no es muy buena.  "+ calidad;
+                    }
+                } else {
+                    resultadoDiv.innerHTML = "El valor de calidad no es un número válido.  "+ calidad;
+                }
+            }
+
+            function mostrarSugerenciaContexto(color1, color2) {
+            
+            if (!validarColor(color1) || !validarColor(color2)) {
+                    throw new Error('Los colores ingresados no son válidos');
+                }
+
+                // Lógica para determinar la sugerencia de contexto social basada en los colores
+                var sugerencia = '';
+
+                // Ejemplo de sugerencia 
+                if (color1 === '#000000' && color2 === '#000000') {
+                    sugerencia = 'una combinación funciona mejor en un contexto profesional';
+                } else {
+                    sugerencia = 'una combinación es versátil y puede adaptarse a diferentes contextos';
+                }
+
+
+               // $('#sugerencia-contexto').html('Sugerencia de contexto para los colores ' + color1 + ' y ' + color2 + ' es ' + sugerencia);
+                $('#sugerencia-contexto').html('estos colores ' + color1 + ' y ' + color2 + ' es ' + sugerencia);
+            }
+        });
+
+        function validarColor(color) {
+            var regex = /^#[0-9A-F]{6}$/i;
+            return regex.test(color);
+            }
+    </script>
+</body>
+</html>
